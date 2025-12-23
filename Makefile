@@ -5,7 +5,7 @@
 # Run 'make help' to see all available commands
 # ============================================
 
-.PHONY: help init setup up down restart logs shell \
+.PHONY: help init env-setup setup up down restart logs shell \
         migrate fresh seed rollback tinker \
         test test-filter pint lint \
         cache-clear config-clear route-clear view-clear optimize \
@@ -63,6 +63,7 @@ help: ## Show this help message
 
 init: ## First-time project setup (build, install, migrate)
 	@echo "$(GREEN)Starting initial setup...$(RESET)"
+	@make env-setup
 	@make build
 	@make up
 	@sleep 5
@@ -71,6 +72,15 @@ init: ## First-time project setup (build, install, migrate)
 	@make migrate
 	@make mobile-install
 	@echo "$(GREEN)Setup complete! Run 'make up' to start development.$(RESET)"
+
+env-setup: ## Copy .env.example to .env if .env doesn't exist
+	@if [ ! -f backend/.env ]; then \
+		echo "$(YELLOW)Creating .env file from .env.example...$(RESET)"; \
+		cp backend/.env.example backend/.env; \
+		echo "$(GREEN).env file created!$(RESET)"; \
+	else \
+		echo "$(CYAN).env file already exists, skipping...$(RESET)"; \
+	fi
 
 setup: ## Quick setup (up, install dependencies)
 	@make up
